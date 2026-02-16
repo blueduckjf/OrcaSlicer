@@ -1111,6 +1111,38 @@ bool SelectMachineDialog::do_ams_mapping(MachineObject *obj_,bool use_ams)
         }
     }
 
+    // When the printer has no AMS (external spool only), auto-assign all
+    // unmapped filaments to the main external spool so the user does not
+    // have to manually select it in the dropdown.
+    if (!obj_->HasAms() && !m_ams_mapping_result.empty()) {
+        bool has_unmapped = false;
+        for (const auto &fi : m_ams_mapping_result) {
+            if (fi.tray_id < 0) {
+                has_unmapped = true;
+                break;
+            }
+        }
+        if (has_unmapped && !obj_->vt_slot.empty()) {
+            BOOST_LOG_TRIVIAL(info) << "No AMS detected - auto-assigning all filaments to external spool";
+            for (auto &fi : m_ams_mapping_result) {
+                if (fi.tray_id < 0) {
+                    fi.tray_id  = VIRTUAL_TRAY_MAIN_ID;
+                    fi.ams_id   = VIRTUAL_AMS_MAIN_ID_STR;
+                    fi.slot_id  = VIRTUAL_AMS_MAIN_ID_STR;
+                    // Carry over external spool color/type if available
+                    if (!obj_->vt_slot.empty()) {
+                        const auto &ext = obj_->vt_slot.front();
+                        if (!ext.color.empty()) {
+                            fi.color = ext.color;
+                        }
+                        fi.ctype  = ext.ctype;
+                        fi.colors = ext.cols;
+                    }
+                }
+            }
+        }
+    }
+
     if (filament_result == 0) {
         print_ams_mapping_result(m_ams_mapping_result);
         std::string ams_array;
