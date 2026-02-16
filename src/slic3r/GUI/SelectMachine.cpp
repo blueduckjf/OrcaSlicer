@@ -1988,35 +1988,6 @@ void SelectMachineDialog::on_ok_btn(wxCommandEvent &event)
         has_slice_warnings = true;
     }
 
-    //check blacklist
-    for (auto i = 0; i < m_ams_mapping_result.size(); i++) {
-
-        const auto& ams_id = m_ams_mapping_result[i].get_ams_id();
-        const auto& slot_id = m_ams_mapping_result[i].get_slot_id();
-
-        auto tid = m_ams_mapping_result[i].tray_id;
-
-        std::string filament_type = boost::to_upper_copy(m_ams_mapping_result[i].type);
-        std::string filament_brand;
-
-        for (auto fs : m_filaments) {
-            if (fs.id == m_ams_mapping_result[i].id) {
-                filament_brand = m_filaments[i].brand;
-            }
-        }
-
-        bool in_blacklist = false;
-        std::string action;
-        wxString info;
-        wxString wiki_url;
-        DevFilaBlacklist::check_filaments_in_blacklist_url(obj_->printer_type, filament_brand, filament_type, m_ams_mapping_result[i].filament_id, ams_id, slot_id, "", in_blacklist,
-                                                        action, info, wiki_url);
-        if (in_blacklist && action == "warning") {
-            confirm_text.push_back(ConfirmBeforeSendInfo(info, wiki_url));
-            has_slice_warnings = true;
-        }
-    }
-
     PartPlate* plate = m_plater->get_partplate_list().get_curr_plate();
 
     bool has_show_traditional_timelapse_waring = false;
