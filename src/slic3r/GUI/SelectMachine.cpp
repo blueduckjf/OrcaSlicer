@@ -1129,15 +1129,6 @@ bool SelectMachineDialog::do_ams_mapping(MachineObject *obj_,bool use_ams)
                     fi.tray_id  = VIRTUAL_TRAY_MAIN_ID;
                     fi.ams_id   = VIRTUAL_AMS_MAIN_ID_STR;
                     fi.slot_id  = VIRTUAL_AMS_MAIN_ID_STR;
-                    // Carry over external spool color/type if available
-                    if (!obj_->vt_slot.empty()) {
-                        const auto &ext = obj_->vt_slot.front();
-                        if (!ext.color.empty()) {
-                            fi.color = ext.color;
-                        }
-                        fi.ctype  = ext.ctype;
-                        fi.colors = ext.cols;
-                    }
                 }
             }
         }
